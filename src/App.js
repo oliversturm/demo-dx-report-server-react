@@ -4,7 +4,9 @@ import './App.css';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
 import 'devexpress-reporting/css/web-document-viewer-light.min.css';
-import 'devextreme/data/utils';
+import axios from 'axios';
+import qs from 'qs';
+
 const viewerHtml = require('devexpress-reporting/dx-web-document-viewer').Html;
 
 class ReportViewer extends React.Component {
@@ -25,17 +27,33 @@ class ReportViewer extends React.Component {
   }
   componentDidMount() {
     this.refs.innerScript.innerHTML = viewerHtml;
-    ko.applyBindings(
-      {
-        reportUrl: this.reportUrl,
-        remoteSettings: {
-          serverUri: 'http://192.168.1.234:83',
-          authToken:
-            'yuBSRvLwGMQJAUSTbVxdml45zI_4tPPmFoVzymmgPbTr21Qb-zIUTmP4HAh5UdLGN7rUM-cT3CZNvBQC6XW8strA56edyWsit8qxO3ibuRStGy0_BXUGTJDh6x0KQp4-PQMsFAorQUXtxQLIzRZwk1aYaox21sYBAunTKJw1lfylvR6fp7nMFUlmppNhuBn0ONT9Z07ywjPK8oHO-okOB9SlAVD4EXJLC8yf_cLIAtBBkxtDBkUJZrhwuMqkVeJERsLmNcuSAN34D_u0_OIggyNBpYAbi_QjHdHjLtldvhQ'
+    const baseUrl = 'http://192.168.1.234:83';
+    axios
+      .post(
+        baseUrl + '/oauth/token',
+        qs.stringify({
+          username: 'sturm',
+          password: 'secret',
+          grant_type: 'password'
+        }),
+        {
+          headers: { 'content-type': 'application/x-www-form-urlencoded' }
         }
-      },
-      this.refs.viewer
-    );
+      )
+      .then(r => r.data)
+      .then(d => d.access_token)
+      .then(token => {
+        ko.applyBindings(
+          {
+            reportUrl: this.reportUrl,
+            remoteSettings: {
+              serverUri: baseUrl,
+              authToken: token
+            }
+          },
+          this.refs.viewer
+        );
+      });
   }
   componentWillUnmount() {
     ko.cleanNode(this.refs.viewer);
