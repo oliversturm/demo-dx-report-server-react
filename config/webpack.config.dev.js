@@ -207,10 +207,7 @@ module.exports = {
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
             exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
-            // Oliver: tried to include HTML here, but this doesn't work
-            // because it breaks the inclusion of the standard index.html
-            // for App startup.
-            //exclude: [/\.(js|jsx|mjs)$/, /\.json$/],
+
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]'
