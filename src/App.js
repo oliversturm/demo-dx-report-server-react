@@ -3,11 +3,13 @@ import ko from 'knockout';
 import './App.css';
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
-import 'devexpress-reporting/css/web-document-viewer-light.min.css';
+import '@devexpress/analytics-core/dist/css/dx-analytics.light.css';
+import '@devexpress/analytics-core/dist/css/dx-analytics.common.css';
+import 'devexpress-reporting/dist/css/dx-webdocumentviewer.css';
+import 'devexpress-reporting';
+
 import axios from 'axios';
 import qs from 'qs';
-
-const viewerHtml = require('devexpress-reporting/dx-web-document-viewer').Html;
 
 class ReportViewer extends React.Component {
   constructor(props) {
@@ -16,17 +18,17 @@ class ReportViewer extends React.Component {
   }
   render() {
     return (
-      <div>
-        <div ref="innerScript" />
-        <div className="fullscreen" data-bind="dxReportViewer: $data" />
-      </div>
+      <div
+        ref="viewer"
+        className="fullscreen"
+        data-bind="dxReportViewer: $data"
+      />
     );
   }
   componentWillReceiveProps(newProps) {
     this.reportUrl(newProps.reportUrl);
   }
   componentDidMount() {
-    this.refs.innerScript.innerHTML = viewerHtml;
     const baseUrl = 'http://192.168.1.234:83';
     axios
       .post(
